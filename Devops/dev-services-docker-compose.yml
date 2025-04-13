@@ -1,0 +1,43 @@
+version: '3.4'
+
+services:
+  spellingbeekiller-mongo:
+    image: mongo:latest
+    container_name: spellingbeekiller-mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    ports:
+      - "27017:27017"
+    volumes:
+      - spellingbeekiller-mongo-volume:/data/db
+
+  spellingbeekiller-redis:
+    image: redis:latest
+    container_name: spellingbeekiller-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - spellingbeekiller-redis-volume:/data
+
+  spellingbeekiller-cache-redis:
+    image: redis:latest
+    container_name: spellingbeekiller-cache-redis
+    command: --port 6380
+    ports:
+      - "6380:6380"
+    volumes:
+      - spellingbeekiller-cache-redis-volume:/data
+
+volumes:
+  spellingbeekiller-mongo-volume:
+    external: true
+  spellingbeekiller-redis-volume:
+    external: true
+  spellingbeekiller-cache-redis-volume:
+    external: true
+
+networks:
+  default:
+    external:
+      name: spellingbeekiller-gservices

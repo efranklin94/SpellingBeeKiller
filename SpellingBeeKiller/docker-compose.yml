@@ -2,25 +2,20 @@ version: '3.4'
 
 services:
   spellingbeekiller-game-server:
-    image: ${DOCKER_REGISTRY-}mainapplication
+    image: spellingbeekiller:dev
     container_name: spellingbeekiller-game-server
-    hostname: spellingbeekiller-game-server
     build:
       context: .
-      dockerfile: MainApplication/Dockerfile
+      dockerfile: Dockerfile  # Simplified path
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:80 # https://+:443; TODO get certificate for https
+      - ASPNETCORE_URLS=http://+:80
     ports:
-      - "8081:80"
-      # - "44301:443" TODO
-    volumes:
-      # TODO IDK what should be these, copied from bingo
-      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
-      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
-      
+      - "8080:80"
+    networks:
+      - default
+
 networks:
   default:
     external:
-      name: SpellingBeeKillerGServices
-      
+      name: spellingbeekiller-gservices
