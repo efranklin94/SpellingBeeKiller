@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Hangfire" Version="1.8.18" />
+    <PackageReference Include="Nanoid" Version="3.1.0" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.8.0" />
+	  <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="9.0.4" />
+
+  </ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\DomainModels\DomainModels.csproj" />
+		<ProjectReference Include="..\Repositories\Repositories.csproj" />
+		<ProjectReference Include="..\SharedTools\SharedTools.csproj" />
+		<ProjectReference Include="..\RedisTools\RedisTools.csproj" />
+		<ProjectReference Include="..\EncryptionMethods\EncryptionMethods.csproj" />
+	</ItemGroup>
+
+</Project>

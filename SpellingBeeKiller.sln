@@ -5,7 +5,17 @@ VisualStudioVersion = 17.10.35122.118
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MainApplication", "SpellingBeeKiller\MainApplication.csproj", "{1B7CE884-CBBA-414C-B7A0-B243E8BE4D28}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DomainModels", "DomainModels\DomainModels.csproj", "{5515E3EC-6B64-4099-B8E6-068F16EA5336}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DomainModels", "DomainModels\DomainModels.csproj", "{5515E3EC-6B64-4099-B8E6-068F16EA5336}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DomainServices", "DomainServices\DomainServices.csproj", "{02FBD525-E4A8-4583-98EC-684278B719B5}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Repositories", "Repositories\Repositories.csproj", "{5EF1F48E-1B96-44BA-8581-A5A220002C51}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RedisTools", "RedisTools\RedisTools.csproj", "{AA1768AE-D2C8-49BF-A890-AA6C98CE435F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharedTools", "SharedTools\SharedTools.csproj", "{61286DC0-39E5-4B08-AD01-9B6C08772C05}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EncryptionMethods", "EncryptionMethods\EncryptionMethods.csproj", "{BA7A00D4-C5E6-4207-ACD7-CA85FE9E16C6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +31,26 @@ Global
 		{5515E3EC-6B64-4099-B8E6-068F16EA5336}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5515E3EC-6B64-4099-B8E6-068F16EA5336}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5515E3EC-6B64-4099-B8E6-068F16EA5336}.Release|Any CPU.Build.0 = Release|Any CPU
+		{02FBD525-E4A8-4583-98EC-684278B719B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{02FBD525-E4A8-4583-98EC-684278B719B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{02FBD525-E4A8-4583-98EC-684278B719B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{02FBD525-E4A8-4583-98EC-684278B719B5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5EF1F48E-1B96-44BA-8581-A5A220002C51}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5EF1F48E-1B96-44BA-8581-A5A220002C51}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5EF1F48E-1B96-44BA-8581-A5A220002C51}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5EF1F48E-1B96-44BA-8581-A5A220002C51}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AA1768AE-D2C8-49BF-A890-AA6C98CE435F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AA1768AE-D2C8-49BF-A890-AA6C98CE435F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AA1768AE-D2C8-49BF-A890-AA6C98CE435F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AA1768AE-D2C8-49BF-A890-AA6C98CE435F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{61286DC0-39E5-4B08-AD01-9B6C08772C05}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{61286DC0-39E5-4B08-AD01-9B6C08772C05}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{61286DC0-39E5-4B08-AD01-9B6C08772C05}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{61286DC0-39E5-4B08-AD01-9B6C08772C05}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BA7A00D4-C5E6-4207-ACD7-CA85FE9E16C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BA7A00D4-C5E6-4207-ACD7-CA85FE9E16C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BA7A00D4-C5E6-4207-ACD7-CA85FE9E16C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BA7A00D4-C5E6-4207-ACD7-CA85FE9E16C6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
