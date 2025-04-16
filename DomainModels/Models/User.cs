@@ -42,5 +42,9 @@ namespace DomainModels.Models
         public string RefreshToken { get; set; }
         [Key(17)]
         public bool HasGotReferralReward { get; set; }
+        [Key(18)]
+        public List<string> CurrentBaseGames { get; set; } = new List<string>();
+        [Key(19)]
+        public List<string> CurrentGames { get; set; } = new List<string>();
     }
 }

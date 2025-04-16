@@ -1,4 +1,6 @@
 using DomainServices.Contracts;
+using DomainServices.Contracts.UserServices;
+using DomainServices.Implementations;
 using DomainServices.Implementations.UserServices;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -24,6 +26,11 @@ builder.Services.AddSingleton<IRedisConnection, RedisConnection>();
 // User
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserService, UserService>();
+
+builder.Services.AddScoped<LoadService>();
+builder.Services.AddScoped<MigrationService>();
+builder.Services.AddScoped<ResponseFactory>();
 
 // Necessary for messagePack serialization of objects of objects in DTOs problem
 builder.Services.AddControllersWithViews().AddNewtonsoftJson(options =>
