@@ -90,8 +90,8 @@ namespace DomainServices.Implementations.UserServices
 
 
 
-        public async Task<(User User, string error)> Load(string clientVersion, string userId, string deviceId,
-            string refreshTokenHash, string storeType)
+        public async Task<(User User, string error)> Load(string userId, string clientVersion = "0.0.1" , string deviceId = "string",
+            string refreshTokenHash = null, string storeType = null)
         {
             //TODO
             //check for version
@@ -128,15 +128,15 @@ namespace DomainServices.Implementations.UserServices
             //    return (null, "You are banned");
             //}
 
-            if (!string.IsNullOrWhiteSpace(user.RefreshToken))
-            {
-                // validate access token is issued by the right refresh token 
-                if (refreshTokenHash != EncryptionMethods.Toolbox.ComputeSha256Hash(user.RefreshToken))
-                {
-                    // this happens when user restore his account in an other device, the old device should get this error
-                    return (null, "access token issued by wrong Refresh token");
-                }
-            }
+            //if (!string.IsNullOrWhiteSpace(user.RefreshToken))
+            //{
+            //    // validate access token is issued by the right refresh token 
+            //    if (refreshTokenHash != EncryptionMethods.Toolbox.ComputeSha256Hash(user.RefreshToken))
+            //    {
+            //        // this happens when user restore his account in an other device, the old device should get this error
+            //        return (null, "access token issued by wrong Refresh token");
+            //    }
+            //}
 
             //TODO
             //if (user.UpdatedAt + TimeSpan.FromDays(2) < DateTime.UtcNow)

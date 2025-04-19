@@ -1,9 +1,7 @@
-﻿using DomainServices.Implementations;
+﻿using DomainModels.Models.IntermediateModels;
+using DomainServices.Implementations;
 using DomainServices.Implementations.UserServices;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Repositories.Implementations;
-using System.Security.Claims;
 
 namespace MainApplication.Controllers
 {
@@ -23,22 +21,22 @@ namespace MainApplication.Controllers
 
         [HttpGet("load")]
         //TODO client version, storetype, validgpzone
-        public async Task<ActionResult<string>> Load(string clientVersion = "test", string storeType = "test", bool validGPZone = true)
+        public async Task<ActionResult<string>> Load(string userId)
         {
-            var userId = HttpContext.User.Claims.SingleOrDefault(x => x.Type == ClaimTypes.NameIdentifier).Value;
-            var deviceIdClaim = HttpContext.User.Claims.SingleOrDefault(x => x.Type == ClaimTypes.SerialNumber);
-            var refreshTokenHash = HttpContext.User.Claims.SingleOrDefault(x => x.Type == ClaimTypes.Hash).Value;
+            //var userId = HttpContext.User.Claims.SingleOrDefault(x => x.Type == ClaimTypes.NameIdentifier).Value;
+            //var deviceIdClaim = HttpContext.User.Claims.SingleOrDefault(x => x.Type == ClaimTypes.SerialNumber);
+            //var refreshTokenHash = HttpContext.User.Claims.SingleOrDefault(x => x.Type == ClaimTypes.Hash).Value;
 
             if (userId != null)
             {
-                var result = await loadService.Load(clientVersion, userId, deviceIdClaim?.Value, refreshTokenHash, storeType);
+                var result = await loadService.Load(userId);
 
                 if (result.error != null)
                 {
                     return BadRequest(result.error);
                 }
 
-                var response = await responseFactory.PlayerProfileModel(result.User);
+                PlayerProfileModel response = await responseFactory.PlayerProfileModel(result.User);
 
                 return Ok(response);
             }

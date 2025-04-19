@@ -3,8 +3,10 @@ using DomainServices.Contracts.UserServices;
 using DomainServices.Implementations;
 using DomainServices.Implementations.UserServices;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using RedisTools;
 using Repositories;
 using Repositories.Contracts;
 using Repositories.Implementations;
@@ -73,6 +75,11 @@ builder.Services.AddAuthentication(x =>
         ValidateLifetime = true
     };
 });
+
+//TODO
+//services.AddDataProtection()
+//    .PersistKeysToStackExchangeRedis(new RedisConnectionHandler(Configuration.GetConnectionString("RedisDbConnection")).GetConnection(),
+//    "DataProtection-Keys");
 
 var app = builder.Build();
 
