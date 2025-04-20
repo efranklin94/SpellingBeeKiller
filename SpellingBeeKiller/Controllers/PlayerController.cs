@@ -1,4 +1,4 @@
-﻿using DomainModels.Models.IntermediateModels;
+﻿using DomainModels.DTO.ResponseModels.Player;
 using DomainServices.Implementations;
 using DomainServices.Implementations.UserServices;
 using Microsoft.AspNetCore.Mvc;
@@ -36,7 +36,7 @@ namespace MainApplication.Controllers
                     return BadRequest(result.error);
                 }
 
-                PlayerProfileModel response = await responseFactory.PlayerProfileModel(result.User);
+                LoadResponse response = await responseFactory.PlayerProfileModel(result.User);
 
                 return Ok(response);
             }

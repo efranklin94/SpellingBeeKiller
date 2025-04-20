@@ -1,16 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using MessagePack;
 
 namespace DomainModels.Models.IntermediateModels
 {
+    [MessagePackObject]
     public class BaseGameModeData
     {
+        [Key(0)]
         public string GameId { get; set; }
-        //I think its better to be string or Datetime
-        public long StartTime { get; set; }
-        public long EndTime { get; set; }
+        [Key(1)]
+        public DateTime StartTime { get; set; }
+        [Key(2)]
+        public DateTime EndTime { get; set; }
     }
 }

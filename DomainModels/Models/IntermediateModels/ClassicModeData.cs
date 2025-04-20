@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using MessagePack;
 
 namespace DomainModels.Models.IntermediateModels
 {
-    public class ClassicModeData
+    [MessagePackObject]
+    public class ClassicModeData : BaseGameModeData
     {
-        //public ClassicModeM MyProperty { get; set; }
+        [Key(5)]
+        public char[] WordToGuess { get; set; }
+        [Key(6)]
+        public List<char[]> StateLogs { get; set; } = new List<char[]>();
     }
 }
