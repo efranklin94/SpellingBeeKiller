@@ -10,5 +10,6 @@ namespace DomainModels.DTO.ResponseModels.Player
         public List<ClassicModeData> ClassisModeDataList { get; set; } = new List<ClassicModeData>();
         public List<CoreBeeGameData> CoreBeeGameDataList { get; set; } = new List<CoreBeeGameData>();
         public List<BeeGamesInvitations> BeeGamesInvitations { get; set; } = new List<BeeGamesInvitations>();
+        public List<MainGameHistory> MainGameHistoryList { get; set; } = new List<MainGameHistory>();
     }
 }
