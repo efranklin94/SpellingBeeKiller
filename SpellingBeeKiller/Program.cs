@@ -1,3 +1,4 @@
+using DomainModels.Models.Game;
 using DomainServices.Contracts;
 using DomainServices.Contracts.UserServices;
 using DomainServices.Implementations;
@@ -102,5 +103,40 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+// A minial API to test redis functionality
+app.MapGet("/test-redis", async () => {
+    try
+    {
+        var redis = ConnectionMultiplexer.Connect("localhost");
+        var service = new CoreBeeGameRedisRepository(redis);
+
+        // Create test data
+        var testGame = new CoreBeeGameData
+        {
+            GameId = "TEST_123",
+            FirstPlayer = "test1",
+            SecondPlayer = "test2",
+            // ... populate other fields ...
+        };
+
+        // Test CRUD operations
+        await service.AddOrUpdateAsync(testGame.FirstPlayer, testGame); // Create
+        var stored = await service.GetAsync(testGame.FirstPlayer, "TEST_123"); // Read
+        stored.TimePerTurnInHours = 24; // Update
+        await service.AddOrUpdateAsync(stored.FirstPlayer, stored);
+        await service.RemoveAsync(stored.FirstPlayer, "TEST_123"); // Delete
+
+        return Results.Ok(new
+        {
+            success = true,
+            operations = new[] { "create", "read", "update", "delete" }
+        });
+    }
+    catch (Exception ex)
+    {
+        return Results.Problem($"Redis test failed: {ex.Message}");
+    }
+});
 
 app.Run();
