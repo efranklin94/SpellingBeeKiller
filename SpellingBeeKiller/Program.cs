@@ -1,3 +1,4 @@
+using DomainModels.Models;
 using DomainServices.Contracts;
 using DomainServices.Contracts.UserServices;
 using DomainServices.Implementations;
@@ -21,6 +22,8 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddSignalR();
 
 builder.Services.AddSingleton<IDatabaseContext, DatabaseContext>();
 builder.Services.AddSingleton<IRedisConnection, RedisConnection>();
@@ -96,5 +99,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapHub<GameHub>("/gamehub");
 
 app.Run();
