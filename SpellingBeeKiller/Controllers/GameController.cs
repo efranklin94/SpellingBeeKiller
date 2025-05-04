@@ -1,5 +1,6 @@
 ﻿using DomainModels.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 
 namespace MainApplication.Controllers
 {
@@ -7,17 +8,17 @@ namespace MainApplication.Controllers
     [ApiController]
     public class GameController : ControllerBase
     {
-        private readonly GameHub gameHub;
-        public GameController(GameHub gameHub)
+        private readonly IHubContext<GameHub> hubContext;
+
+        public GameController(IHubContext<GameHub> hubContext)
         {
-            this.gameHub = gameHub;
+            this.hubContext = hubContext;
         }
 
-        [HttpPost]
+        [HttpPost("Create")]
         public async Task<IActionResult> CreateGame()
         {
-            await gameHub.SendMessage("Sample game created");
-
+            await hubContext.Clients.All.SendAsync("RecievedMessage", "playerName", "Sample game created");
             return Ok();
         }
     }

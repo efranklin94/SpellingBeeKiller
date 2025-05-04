@@ -16,11 +16,5 @@ namespace DomainModels.Models
             public HubEvents EventTypes;
             required public string SerializedData;
         }
-
-        public async Task SendMessage(string serializedSocketPack)
-        {
-            // Broadcast
-            await Clients.All.SendAsync("RecievedMessage", "playerName", serializedSocketPack);
-        }
     }
 }
