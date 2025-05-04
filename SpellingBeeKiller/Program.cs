@@ -10,6 +10,7 @@ using RedisTools;
 using Repositories;
 using Repositories.Contracts;
 using Repositories.Implementations;
+using StackExchange.Redis;
 using Swashbuckle.AspNetCore.Filters;
 using System.Text;
 
@@ -75,6 +76,11 @@ builder.Services.AddAuthentication(x =>
         ValidateLifetime = true
     };
 });
+
+builder.Services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect("localhost"));
+builder.Services.AddScoped<ClassicModeRedisRepository>();
+builder.Services.AddScoped<CoreBeeGameRedisRepository>();
+//builder.Services.AddScoped<BeeGamesInvitationService>();
 
 //TODO
 //services.AddDataProtection()

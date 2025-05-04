@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DomainModels.Models.IntermediateModels
+namespace DomainModels.Models.Game
 {
     [MessagePackObject]
     public class CoreBeeGameRoundLog

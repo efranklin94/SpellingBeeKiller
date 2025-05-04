@@ -1,5 +1,4 @@
-﻿using DomainModels.Models;
-using DomainModels.Models.IntermediateModels;
+﻿using DomainModels.Models.Game;
 
 namespace DomainModels.DTO.ResponseModels.Player
 {
