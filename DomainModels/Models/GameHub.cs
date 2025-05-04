@@ -13,7 +13,7 @@ namespace DomainModels.Models
 
         public class SocketPack
         {
-            public HubEvents EventTypes;
+            public HubEvents EventType;
             required public string SerializedData;
         }
     }
