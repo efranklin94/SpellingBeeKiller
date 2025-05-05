@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace MainApplication.Controllers
 {
-    [Authorize]
+    //[Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class AuthController : ControllerBase
@@ -30,7 +30,7 @@ namespace MainApplication.Controllers
 
 
 
-        [AllowAnonymous]
+        //[AllowAnonymous]
         [HttpPost("register")]
         public async Task<ActionResult<string>> Register(RegisterPostModel model)
         {
