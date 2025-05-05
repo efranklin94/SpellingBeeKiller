@@ -39,7 +39,7 @@ namespace MainApplication.Controllers
 
             if (userExists)
             {
-                return Ok(new JObject { { "Username", user.Username } });
+                return Ok(new JObject { { "UserId", user.Id } });
             }
             else
             {
