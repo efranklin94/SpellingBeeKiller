@@ -1,7 +1,12 @@
-﻿using DomainModels.DTO.ResponseModels.Player;
+﻿using DomainModels.DTO.RequestModels.Auth;
+using DomainModels.DTO.ResponseModels.Player;
+using DomainModels.Models;
+using DomainServices.Contracts;
 using DomainServices.Implementations;
 using DomainServices.Implementations.UserServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 
 namespace MainApplication.Controllers
 {
@@ -10,13 +15,37 @@ namespace MainApplication.Controllers
     [ApiController]
     public class PlayerController : ControllerBase
     {
+        private readonly IAuthService authService;
         private readonly LoadService loadService;
         private readonly ResponseFactory responseFactory;
 
-        public PlayerController(LoadService loadService, ResponseFactory responseFactory)
+        public PlayerController(LoadService loadService, ResponseFactory responseFactory, IAuthService authService)
         {
             this.loadService = loadService;
             this.responseFactory = responseFactory;
+            this.authService = authService;
+        }
+
+        [AllowAnonymous]
+        [HttpPost("checkUserExists")]
+        public async Task<ActionResult<string>> CheckExists(CheckExistsRequestModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest("Invalid Request");
+            }
+
+            (bool userExists, User user) = await authService.UserExistsWithDeviceIdAsync(model.DeviceId);
+
+            if (userExists)
+            {
+                return Ok(new JObject { { "UserId", user.Id } });
+            }
+            else
+            {
+                return NotFound();
+            }
+
         }
 
         [HttpGet("load")]

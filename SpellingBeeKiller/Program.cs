@@ -1,3 +1,4 @@
+using DomainModels.Models;
 using DomainModels.Models.Game;
 using DomainServices.Contracts;
 using DomainServices.Contracts.UserServices;
@@ -23,6 +24,8 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddSignalR();
 
 builder.Services.AddSingleton<IDatabaseContext, DatabaseContext>();
 builder.Services.AddSingleton<IRedisConnection, RedisConnection>();
@@ -138,5 +141,7 @@ app.MapGet("/test-redis", async () => {
         return Results.Problem($"Redis test failed: {ex.Message}");
     }
 });
+
+app.MapHub<GameHub>("/gamehub");
 
 app.Run();
