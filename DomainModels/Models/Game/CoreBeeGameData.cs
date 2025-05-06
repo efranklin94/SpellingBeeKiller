@@ -1,7 +1,7 @@
 ﻿using DomainModels.Models.IntermediateModels;
 using MessagePack;
 
-namespace DomainModels.Models
+namespace DomainModels.Models.Game
 {
     [MessagePackObject]
     public class CoreBeeGameData : BaseDbModel
@@ -9,7 +9,7 @@ namespace DomainModels.Models
         [Key(1)]
         public string GameId { get; set; }
         [Key(2)]
-        public string FirstPlayer {  get; set; }
+        public string FirstPlayer { get; set; }
         [Key(3)]
         public string SecondPlayer { get; set; }
         [Key(4)]

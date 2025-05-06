@@ -1,6 +1,6 @@
 ﻿using MessagePack;
 
-namespace DomainModels.Models.IntermediateModels
+namespace DomainModels.Models.Game
 {
     [MessagePackObject]
     public class BaseGameModeData

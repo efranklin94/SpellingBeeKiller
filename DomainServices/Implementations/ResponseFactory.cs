@@ -1,5 +1,6 @@
 ﻿using DomainModels.DTO.ResponseModels.Player;
 using DomainModels.Models;
+using DomainModels.Models.Game;
 using DomainModels.Models.IntermediateModels;
 
 namespace DomainServices.Implementations
