@@ -40,7 +40,7 @@ public class CoreBeeGameRedisRepository : IRedisRepository<CoreBeeGameData>
     {
         var pattern = $"{Prefix}:*";
         return (await GetByPattern(pattern))
-            .Where(g => g.FirstPlayer == userId || g.SecondPlayer == userId);
+            .Where(g => g.PlayerRoomHostId == userId || g.PlayerRoomGuestId == userId);
     }
 
     private async Task<IEnumerable<CoreBeeGameData>> GetByPattern(string pattern)

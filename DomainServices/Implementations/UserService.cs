@@ -83,7 +83,7 @@ public class UserService : IUserService
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow,
             ActiveDeviceId = deviceId,
-            //Ticket = 200,
+            Ticket = 200,
             Coin = 200,
             IsEmulator = isEmulator,
             //TODO: Locale = locale

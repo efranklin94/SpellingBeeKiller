@@ -1,11 +1,10 @@
 ﻿using DomainModels.DTO.ResponseModels.Game;
 using DomainModels.Models;
+using DomainModels.Models.Game;
 using DomainModels.Models.IntermediateModels;
+using DomainServices.Implementations;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
-using static DomainModels.Models.GameHub;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using Newtonsoft.Json;
 
 namespace MainApplication.Controllers
 {
@@ -14,54 +13,37 @@ namespace MainApplication.Controllers
     public class GameController : ControllerBase
     {
         private readonly IHubContext<GameHub> hubContext;
+        private readonly GameService gameService;
+        private readonly ILogger<GameController> logger;
 
-        public GameController(IHubContext<GameHub> hubContext)
+        public GameController(IHubContext<GameHub> hubContext, GameService gameService)
         {
             this.hubContext = hubContext;
+            this.gameService = gameService;
         }
 
         [HttpPost("Create")]
-        public async Task<IActionResult> CreateGame()
+        public async Task<IActionResult> CreateGame(string firstUserId, string secondUserId)
         {
-            // MOCK MATCHMAKING
-            UserBaseModel host = new UserBaseModel()
-            {
-                UserId = "68120330ce7a8198383442e3",
-                NickName = "بازیکنbXI6VMp-",
-                Level = 1,
-            };
+            CoreBeeGameData coreBeeGameData = await gameService.CreateGameAsync(firstUserId, secondUserId);
 
-            UserBaseModel guest = new UserBaseModel()
-            {
-                UserId = "bot0000",
-                NickName = "Sam",
-                Level = 4,
-            };
-
-            CoreBeeGameData gameData = new CoreBeeGameData()
-            {
-                GameId = "game00",
-                PlayerRoomHost = host,
-                PlayerRoomGuest = guest,
-                RoundLogs = new List<CoreBeeGameRoundLog>(),
-            };
-
-            SocketPack socketPack = new SocketPack()
-            {
-                EventType = HubEvents.GameStart,
-                SerializedData = JsonConvert.SerializeObject(gameData),
-            };
-            string msg = JsonConvert.SerializeObject(socketPack);
-
-            await hubContext.Clients.All.SendAsync("RecievedMessage", "playerName", msg);
-
+            await hubContext.Clients.User(secondUserId).SendAsync("CreateGame", coreBeeGameData);
             
             CreateGameResponse createGameResponse = new CreateGameResponse()
             {
-                GameId = "game00",
-                UpdatedCoinValue = 450
+                GameId = coreBeeGameData.GameId,
+                UpdatedCoinValue = 450,
             };
+
             return Ok(createGameResponse);
+        }
+
+        [HttpPost("Finish")]
+        public async Task<IActionResult> FinishGame(MainGameHistory gameHistory)
+        {
+            await gameService.FinishGameAsync(gameHistory);
+
+            return Ok();
         }
     }
 }

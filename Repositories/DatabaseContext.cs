@@ -1,4 +1,5 @@
 ﻿using DomainModels.Models;
+using DomainModels.Models.Game;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
@@ -22,11 +23,7 @@ namespace Repositories
 
         #region Collection Names
         private readonly string UsersCollectionName = "Users";
-        private const string ClanCollectionName = "Clans";
-        private const string ClanChatsCollectionName = "ClanChats";
-        private const string ClanFinishedItemRequestCollectionName = "ClanFinishedItemRequests";
-        private const string FinishedClanTournamentStatsCollectionName = "FinishedClanTournamentStats";
-        private const string ViolationsCollectionName = "Violations";
+        private readonly string GameHistoryCollectionName = "GameHistories";
         #endregion
 
         #region IMongoCollections
@@ -37,6 +34,7 @@ namespace Repositories
 
         #region Users Data Collections
         public virtual IMongoCollection<User> UsersCollection { get; set; }
+        public virtual IMongoCollection<GameHistory> GameHistoriesCollection { get; set; }
         #endregion
 
         public DatabaseContext(IConfiguration configuration, IRedisConnection redisConnection, ILogger<DatabaseContext> logger)
@@ -60,12 +58,13 @@ namespace Repositories
 
             #region Users Db Collections
             UsersCollection = UsersDb.GetCollection<User>(UsersCollectionName);
+            GameHistoriesCollection = UsersDb.GetCollection<GameHistory>(GameHistoryCollectionName);
             #endregion
 
             #region Temp Db Collections
             #endregion
 
-            VersionsHash = configuration.GetSection("ProjectSettings")["VersionsHash"]!;
+                        VersionsHash = configuration.GetSection("ProjectSettings")["VersionsHash"]!;
             this.logger = logger;
         }
 

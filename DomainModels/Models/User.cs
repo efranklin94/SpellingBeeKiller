@@ -46,5 +46,7 @@ namespace DomainModels.Models
         public List<string> CurrentBaseGames { get; set; } = new List<string>();
         [Key(19)]
         public List<string> CurrentGames { get; set; } = new List<string>();
+        [Key(20)]
+        public int Ticket { get; set; }
     }
 }

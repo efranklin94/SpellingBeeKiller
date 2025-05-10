@@ -25,19 +25,26 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddSignalR();
-
 builder.Services.AddSingleton<IDatabaseContext, DatabaseContext>();
 builder.Services.AddSingleton<IRedisConnection, RedisConnection>();
+builder.Services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect("localhost"));
+
+builder.Services.AddScoped<ClassicModeRedisRepository>();
+builder.Services.AddScoped<CoreBeeGameRedisRepository>();
+builder.Services.AddScoped<GameHistoryRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 // User
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<GameService>();
 
 builder.Services.AddScoped<LoadService>();
 builder.Services.AddScoped<MigrationService>();
 builder.Services.AddScoped<ResponseFactory>();
+
+builder.Services.AddSignalR();
 
 // Necessary for messagePack serialization of objects of objects in DTOs problem
 builder.Services.AddControllersWithViews().AddNewtonsoftJson(options =>
@@ -81,15 +88,6 @@ builder.Services.AddAuthentication(x =>
     };
 });
 
-builder.Services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect("localhost"));
-builder.Services.AddScoped<ClassicModeRedisRepository>();
-builder.Services.AddScoped<CoreBeeGameRedisRepository>();
-//builder.Services.AddScoped<BeeGamesInvitationService>();
-
-//TODO
-//services.AddDataProtection()
-//    .PersistKeysToStackExchangeRedis(new RedisConnectionHandler(Configuration.GetConnectionString("RedisDbConnection")).GetConnection(),
-//    "DataProtection-Keys");
 
 var app = builder.Build();
 
@@ -106,41 +104,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
-// A minial API to test redis functionality
-app.MapGet("/test-redis", async () => {
-    try
-    {
-        var redis = ConnectionMultiplexer.Connect("localhost");
-        var service = new CoreBeeGameRedisRepository(redis);
-
-        // Create test data
-        var testGame = new CoreBeeGameData
-        {
-            GameId = "TEST_123",
-            FirstPlayer = "test1",
-            SecondPlayer = "test2",
-            // ... populate other fields ...
-        };
-
-        // Test CRUD operations
-        await service.AddOrUpdateAsync(testGame.FirstPlayer, testGame); // Create
-        var stored = await service.GetAsync(testGame.FirstPlayer, "TEST_123"); // Read
-        stored.TimePerTurnInHours = 24; // Update
-        await service.AddOrUpdateAsync(stored.FirstPlayer, stored);
-        await service.RemoveAsync(stored.FirstPlayer, "TEST_123"); // Delete
-
-        return Results.Ok(new
-        {
-            success = true,
-            operations = new[] { "create", "read", "update", "delete" }
-        });
-    }
-    catch (Exception ex)
-    {
-        return Results.Problem($"Redis test failed: {ex.Message}");
-    }
-});
 
 app.MapHub<GameHub>("/gamehub");
 

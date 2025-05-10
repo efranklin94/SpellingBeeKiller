@@ -1,4 +1,5 @@
 ﻿using DomainModels.Models;
+using DomainModels.Models.Game;
 using MongoDB.Driver;
 
 namespace Repositories
@@ -7,6 +8,7 @@ namespace Repositories
     {
         #region Collections
         IMongoCollection<User> UsersCollection { get; }
+        IMongoCollection<GameHistory> GameHistoriesCollection { get; }
         #endregion
 
         #region Methods

@@ -9,20 +9,16 @@ namespace DomainModels.Models.Game
         [Key(1)]
         public string GameId { get; set; }
         [Key(2)]
-        public string FirstPlayer { get; set; }
+        public string PlayerRoomHostId { get; set; }
         [Key(3)]
-        public string SecondPlayer { get; set; }
+        public string PlayerRoomGuestId { get; set; }
         [Key(4)]
-        public UserBaseModel PlayerRoomHost { get; set; }
-        [Key(5)]
-        public UserBaseModel PlayerRoomGuest { get; set; }
-        [Key(6)]
         public int TimePerTurnInHours { get; set; } = 12;
-        [Key(7)]
+        [Key(5)]
         public List<CoreBeeGameRoundLog> RoundLogs { get; set; } = new List<CoreBeeGameRoundLog>();
-        [Key(8)]
+        [Key(6)]
         public DateTime CreatedAt { get; set; }
-        [Key(9)]
+        [Key(7)]
         public DateTime UpdatedAt { get; set; }
     }
 }
