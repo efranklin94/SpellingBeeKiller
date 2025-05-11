@@ -9,12 +9,12 @@ public class GameHub : Hub
 {
     // better to use redis and concurrent dic
     public static List<string> listOfConnectionId = new List<string>();
-    private readonly ILogger logger;
+    //private readonly ILogger logger;
 
-    public GameHub(ILogger logger)
-    {
-        this.logger = logger;
-    }
+    //public GameHub(ILogger logger)
+    //{
+    //    this.logger = logger;
+    //}
 
     public override async Task OnConnectedAsync()
     {
@@ -23,7 +23,7 @@ public class GameHub : Hub
         var deviceId = Context.GetHttpContext().Request.Query["deviceIdData"];
 
         listOfConnectionId.Add(userId);
-        logger.LogInformation($"userid {userId} is now connected to the hub server...");
+        //logger.LogInformation($"userid {userId} is now connected to the hub server...");
 
         await base.OnConnectedAsync();
     }
