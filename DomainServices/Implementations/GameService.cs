@@ -70,6 +70,7 @@ public class GameService
                 .Set(x => x.UpdatedAt, DateTime.UtcNow));
 
         // Notify the host
+        await Task.Delay(TimeSpan.FromSeconds(5));
         if (GameHub.TryGetConnectionId(game.PlayerRoomHostId, out var connectionId))
         {
             await hubContext.Clients.User(game.PlayerRoomHostId).SendAsync("GameStart", game);
@@ -93,6 +94,7 @@ public class GameService
         var userPlayed = coreBeeGameData.RoundLogs.Last().Username;
         string turnedUserId = userPlayed == coreBeeGameData.PlayerRoomHostId ? coreBeeGameData.PlayerRoomHostId : coreBeeGameData.PlayerRoomGuestId;
         // and send the updated data to the other player
+        await Task.Delay(TimeSpan.FromSeconds(5));
         if (GameHub.TryGetConnectionId(turnedUserId, out var connectionId))
         {
             await hubContext.Clients.Client(connectionId).SendAsync("GameProgress", coreBeeGameData);
@@ -132,8 +134,7 @@ public class GameService
         await userRepository.UpdateUserByIdAsync(winnerUser.Id, update);
 
         // Notify both users
-
-
+        await Task.Delay(TimeSpan.FromSeconds(5));
         if (GameHub.TryGetConnectionId(winnerUser.Id, out var connectionId1))
         {
             await hubContext.Clients.User(winnerUser.Id).SendAsync("GameFinished", gameHistory);
