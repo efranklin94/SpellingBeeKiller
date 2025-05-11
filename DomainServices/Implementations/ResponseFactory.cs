@@ -25,11 +25,10 @@ namespace DomainServices.Implementations
                     UserId = user.Id!,
                     Username = user.Username,
                     Level = user.Level,
-                    Coin = user.Coin
+                    Coin = user.Coin,
                 },
 
                 CoreBeeGameDataList = coreGameData.ToList(),
-
             };
 
             return model;

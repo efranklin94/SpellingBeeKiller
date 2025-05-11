@@ -28,18 +28,18 @@ public class GameHub : Hub
         await base.OnConnectedAsync();
     }
 
-    public async Task UpdateGameForUser()
-    {
-        var userId = Context.GetHttpContext().Request.Query["userIdData"];
+    //public async Task UpdateGameForUser()
+    //{
+    //    var userId = Context.GetHttpContext().Request.Query["userIdData"];
 
-        await Clients.User(userId).SendAsync("UpdateGameForUser", new CoreBeeGameData { /* TEST */ });
-    }
+    //    await Clients.User(userId).SendAsync("UpdateGameForUser", new CoreBeeGameData { /* TEST */ });
+    //}
 
-    public async Task NotifyMatchFound(string opponentId)
-    {
-        await Clients.User(Context.UserIdentifier)
-            .SendAsync("MatchFound", opponentId);
-    }
+    //public async Task NotifyMatchFound(string opponentId)
+    //{
+    //    await Clients.User(Context.UserIdentifier)
+    //        .SendAsync("MatchFound", opponentId);
+    //}
 
     //public async Task BroadcastGameState(string gameId, GameState state)
     //{
