@@ -70,7 +70,14 @@ public class GameService
                 .Set(x => x.UpdatedAt, DateTime.UtcNow));
 
         // Notify the host
-        await hubContext.Clients.User(game.PlayerRoomHostId).SendAsync("GameStart", game);
+        if (GameHub.TryGetConnectionId(game.PlayerRoomHostId, out var connectionId))
+        {
+            await hubContext.Clients.User(game.PlayerRoomHostId).SendAsync("GameStart", game);
+        }
+        else
+        {
+            // Handle offline user (store notification, etc.)
+        }
 
         return (user.Ticket, game);
     }
@@ -86,7 +93,14 @@ public class GameService
         var userPlayed = coreBeeGameData.RoundLogs.Last().Username;
         string turnedUserId = userPlayed == coreBeeGameData.PlayerRoomHostId ? coreBeeGameData.PlayerRoomHostId : coreBeeGameData.PlayerRoomGuestId;
         // and send the updated data to the other player
-        await hubContext.Clients.User(turnedUserId).SendAsync("GameProgress", coreBeeGameData);
+        if (GameHub.TryGetConnectionId(turnedUserId, out var connectionId))
+        {
+            await hubContext.Clients.Client(connectionId).SendAsync("GameProgress", coreBeeGameData);
+        }
+        else
+        {
+            // Handle offline user (store notification, etc.)
+        }
     }
 
 
@@ -118,8 +132,27 @@ public class GameService
         await userRepository.UpdateUserByIdAsync(winnerUser.Id, update);
 
         // Notify both users
-        await hubContext.Clients.User(winnerUser.Id).SendAsync("GameFinished", gameHistory);
-        await hubContext.Clients.User(loserUser.Id).SendAsync("GameFinished", gameHistory);
+
+
+        if (GameHub.TryGetConnectionId(winnerUser.Id, out var connectionId1))
+        {
+            await hubContext.Clients.User(winnerUser.Id).SendAsync("GameFinished", gameHistory);
+        }
+        else
+        {
+            // Handle offline user (store notification, etc.)
+        }
+
+        if (GameHub.TryGetConnectionId(loserUser.Id, out var connectionId2))
+        {
+            await hubContext.Clients.User(loserUser.Id).SendAsync("GameFinished", gameHistory);
+        }
+        else
+        {
+            // Handle offline user (store notification, etc.)
+        }
+
+
     }
 }
 

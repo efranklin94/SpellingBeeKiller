@@ -1,6 +1,7 @@
 ﻿using DnsClient.Internal;
 using DomainModels.Models.Game;
 using Microsoft.AspNetCore.SignalR;
+using System.Collections.Concurrent;
 using System.Text.RegularExpressions;
 
 namespace DomainModels.Models;
@@ -8,7 +9,7 @@ namespace DomainModels.Models;
 public class GameHub : Hub
 {
     // better to use redis and concurrent dic
-    public static List<string> listOfConnectionId = new List<string>();
+    private static readonly ConcurrentDictionary<string, string> _userConnections = new();
     //private readonly ILogger logger;
 
     //public GameHub(ILogger logger)
@@ -22,12 +23,23 @@ public class GameHub : Hub
         var userId = Context.GetHttpContext().Request.Query["userIdData"];
         var deviceId = Context.GetHttpContext().Request.Query["deviceIdData"];
 
-        listOfConnectionId.Add(userId);
+        _userConnections.TryAdd(userId, Context.ConnectionId);
         //logger.LogInformation($"userid {userId} is now connected to the hub server...");
 
         await base.OnConnectedAsync();
     }
 
+    public override async Task OnDisconnectedAsync(Exception exception)
+    {
+        var userId = Context.UserIdentifier;
+        _userConnections.TryRemove(userId, out _);
+        await base.OnDisconnectedAsync(exception);
+    }
+
+    public static bool TryGetConnectionId(string userId, out string connectionId)
+    {
+        return _userConnections.TryGetValue(userId, out connectionId);
+    }
     //public async Task UpdateGameForUser()
     //{
     //    var userId = Context.GetHttpContext().Request.Query["userIdData"];
