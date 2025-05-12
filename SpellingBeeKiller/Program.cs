@@ -5,6 +5,7 @@ using DomainServices.Contracts.UserServices;
 using DomainServices.Implementations;
 using DomainServices.Implementations.UserServices;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -107,4 +108,18 @@ app.MapControllers();
 
 app.MapHub<GameHub>("/gamehub");
 
+app.MapPost("/api/test/send-start", async (IHubContext<GameHub> hubContext) =>
+{
+    var userId = "test-user-123";
+    var payload = "game-start!";
+    var connectionId = GameHub.GetConnectionId(userId);
+
+    if (connectionId != null)
+    {
+        await hubContext.Clients.Client(connectionId).SendAsync("GameStart", payload);
+        return Results.Ok(new { Sent = "GameStart", To = userId, Payload = payload });
+    }
+
+    return Results.NotFound($"No active connection found for user {userId}");
+});
 app.Run();
