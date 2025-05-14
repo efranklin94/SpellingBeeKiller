@@ -17,11 +17,12 @@ namespace MainApplication.Controllers
         private readonly ILogger<GameController> logger;
         private readonly IUserRepository userRepository;
 
-        public GameController(IHubContext<GameHub> hubContext, GameService gameService, IUserRepository userRepository)
+        public GameController(IHubContext<GameHub> hubContext, GameService gameService, IUserRepository userRepository, ILogger<GameController> logger)
         {
             this.hubContext = hubContext;
             this.gameService = gameService;
             this.userRepository = userRepository;
+            this.logger = logger;
         }
 
         [HttpPost("Create")]
@@ -29,9 +30,9 @@ namespace MainApplication.Controllers
         {
             var result = await gameService.CreateGameAsync(userId);
             
-            CreateGameResponse createGameResponse = new CreateGameResponse()
+            CreateOrJoinGameResponse createGameResponse = new CreateOrJoinGameResponse()
             {
-                GameId = result.gameId,
+                GameData = result.gameDataDTO,
                 UpdatedTicketValue = result.firstUserUpdatedTicket,
             };
 
@@ -59,11 +60,14 @@ namespace MainApplication.Controllers
         public async Task<IActionResult> JoinGame(string gameId, string userId)
         {
             var result = await gameService.JoinGameAsync(gameId, userId);
-            return Ok(new
+            
+            CreateOrJoinGameResponse joinGameResponse = new CreateOrJoinGameResponse()
             {
-                result.game,
-                result.updatedTicket
-            });
+                GameData = result.gameData,
+                UpdatedTicketValue = result.updatedTicket,
+            };
+
+            return Ok(joinGameResponse);
         }
     }
 }

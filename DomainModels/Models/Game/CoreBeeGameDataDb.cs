@@ -1,10 +1,9 @@
-﻿using DomainModels.Models.IntermediateModels;
-using MessagePack;
+﻿using MessagePack;
 
 namespace DomainModels.Models.Game
 {
     [MessagePackObject]
-    public class CoreBeeGameData : BaseDbModel
+    public class CoreBeeGameDataDb : BaseDbModel
     {
         [Key(1)]
         public string GameId { get; set; }

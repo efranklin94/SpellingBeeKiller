@@ -24,10 +24,10 @@ public class GameService
         this.hubContext = hubContext;
     }
 
-    public async Task<(int firstUserUpdatedTicket, string gameId)> CreateGameAsync(string userId)
+    public async Task<(int firstUserUpdatedTicket, CoreBeeGameData gameDataDTO)> CreateGameAsync(string userId)
     {
         // Create the game in redis
-        CoreBeeGameData gameData = new CoreBeeGameData()
+        CoreBeeGameDataDb gameData = new CoreBeeGameDataDb()
         {
             GameId = Guid.NewGuid().ToString(),
             PlayerRoomHostId = userId,
@@ -47,10 +47,17 @@ public class GameService
                 .Set(x => x.Ticket, user.Ticket)
                 .Set(x => x.UpdatedAt, DateTime.UtcNow));
 
-        return (user.Ticket, gameData.GameId);
+        CoreBeeGameData gameDataDTO = new CoreBeeGameData()
+        {
+            GameId = gameData.GameId,
+            PlayerRoomHost = new UserBaseModel { Level = user.Level, UserId = user.Id, NickName = user.Username},
+            RoundLogs = gameData.RoundLogs,
+        };
+
+        return (user.Ticket, gameDataDTO);
     }
 
-    public async Task<(int updatedTicket, CoreBeeGameData game)> JoinGameAsync(string gameId, string userId)
+    public async Task<(int updatedTicket, CoreBeeGameData gameData)> JoinGameAsync(string gameId, string userId)
     {
         var game = await coreBeeGameRedisRepository.GetAsync("", gameId);
         if (game == null) throw new Exception("Game not found");
@@ -69,24 +76,33 @@ public class GameService
                 .Set(x => x.Ticket, user.Ticket)
                 .Set(x => x.UpdatedAt, DateTime.UtcNow));
 
+        User hostUser = await userRepository.GetUserByIdAsync(game.PlayerRoomHostId);
+        CoreBeeGameData gameDataDTO = new CoreBeeGameData()
+        {
+            GameId = game.GameId,
+            PlayerRoomGuest = new UserBaseModel { UserId = user.Id, Level = user.Level, NickName = user.Username },
+            RoundLogs = game.RoundLogs,
+            PlayerRoomHost = new UserBaseModel { UserId = hostUser.Id, Level = hostUser.Level, NickName = hostUser.Username }
+        };
+
         // Notify the host
         await Task.Delay(TimeSpan.FromSeconds(5));
-        if (GameHub.TryGetConnectionId(game.PlayerRoomHostId, out var connectionId))
+        if (GameHub.TryGetConnectionId(gameDataDTO.PlayerRoomHost.UserId, out var connectionId))
         {
-            await hubContext.Clients.User(game.PlayerRoomHostId).SendAsync("JoinGame", game);
+            await hubContext.Clients.User(gameDataDTO.PlayerRoomHost.UserId).SendAsync("JoinGame", gameDataDTO);
         }
         else
         {
             // Handle offline user (store notification, etc.)
         }
 
-        return (user.Ticket, game);
+        return (user.Ticket, gameDataDTO);
     }
 
     public async Task SaveGameProgress(MainGameLogProgressRequestModel dto)
     {
         // Update the rounds
-        CoreBeeGameData coreBeeGameData = await coreBeeGameRedisRepository.GetAsync("", dto.GameId);
+        CoreBeeGameDataDb coreBeeGameData = await coreBeeGameRedisRepository.GetAsync("", dto.GameId);
         coreBeeGameData.RoundLogs.Add(dto.Round);
         await coreBeeGameRedisRepository.AddOrUpdateAsync("", coreBeeGameData);
 
@@ -122,7 +138,7 @@ public class GameService
     {
         User winnerUser = await userRepository.GetUserByIdAsync(winnerUserId);
 
-        CoreBeeGameData gameData = await coreBeeGameRedisRepository.GetAsync("", gameId);
+        CoreBeeGameDataDb gameData = await coreBeeGameRedisRepository.GetAsync("", gameId);
 
         string loserId = winnerUserId == gameData.PlayerRoomHostId ? gameData.PlayerRoomHostId : gameData.PlayerRoomGuestId;
         User loserUser = await userRepository.GetUserByIdAsync(loserId);

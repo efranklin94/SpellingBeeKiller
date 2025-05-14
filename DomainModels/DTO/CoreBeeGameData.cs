@@ -3,7 +3,7 @@ using DomainModels.Models.IntermediateModels;
 
 namespace DomainModels.DTO;
 
-public class CoreBeeGameDataDTO
+public class CoreBeeGameData
 {
     public string GameId { get; set; }
     public UserBaseModel PlayerRoomHost { get; set; }
