@@ -10,7 +10,7 @@ namespace DomainModels.Models.Game
         [Key(2)]
         public string PlayerRoomHostId { get; set; }
         [Key(3)]
-        public string PlayerRoomGuestId { get; set; }
+        public string? PlayerRoomGuestId { get; set; }
         [Key(4)]
         public int TimePerTurnInHours { get; set; } = 12;
         [Key(5)]
