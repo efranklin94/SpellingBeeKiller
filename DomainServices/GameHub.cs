@@ -1,8 +1,7 @@
 ﻿using DnsClient.Internal;
-using DomainModels.Models.Game;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Logging;
 using System.Collections.Concurrent;
-using System.Text.RegularExpressions;
 
 namespace DomainModels.Models;
 
@@ -10,36 +9,66 @@ public class GameHub : Hub
 {
     // better to use redis and concurrent dic
     private static readonly ConcurrentDictionary<string, string> _userConnections = new();
-    //private readonly ILogger logger;
+    private readonly ILogger<GameHub> logger;
 
-    //public GameHub(ILogger logger)
-    //{
-    //    this.logger = logger;
-    //}
-
-    public override async Task OnConnectedAsync()
+    public GameHub(ILogger<GameHub> logger)
     {
-        // better to use lock
-        var userId = Context.GetHttpContext().Request.Query["userIdData"];
-        var deviceId = Context.GetHttpContext().Request.Query["deviceIdData"];
-
-        _userConnections.TryAdd(userId, Context.ConnectionId);
-        //logger.LogInformation($"userid {userId} is now connected to the hub server...");
-
-        await base.OnConnectedAsync();
+        this.logger = logger;
     }
 
-    public override async Task OnDisconnectedAsync(Exception exception)
+    public override Task OnConnectedAsync()
     {
-        var userId = Context.UserIdentifier;
-        _userConnections.TryRemove(userId, out _);
-        await base.OnDisconnectedAsync(exception);
+        var httpContext = Context.GetHttpContext();
+        var userId = httpContext.Request.Query["userIdData"].ToString();
+
+        if (!string.IsNullOrEmpty(userId))
+        {
+            lock (_userConnections)
+            {
+                _userConnections[userId] = Context.ConnectionId;
+                logger.LogInformation($"userid : {userId} is now connected to the hubserver with the connectionId {Context.ConnectionId}");
+            }
+        }
+
+        return base.OnConnectedAsync();
     }
+
+    public override Task OnDisconnectedAsync(Exception? exception)
+    {
+        var connectionId = Context.ConnectionId;
+        string? userIdToRemove = null;
+
+        foreach (var kvp in _userConnections)
+        {
+            if (kvp.Value == connectionId)
+            {
+                userIdToRemove = kvp.Key;
+                logger.LogInformation($"userid : {userIdToRemove} has disconnected from the hubserver with the connectionId {connectionId}");
+
+                break;
+            }
+        }
+
+        if (userIdToRemove is not null)
+            _userConnections.TryRemove(userIdToRemove, out _);
+
+        return base.OnDisconnectedAsync(exception);
+    }
+
 
     public static bool TryGetConnectionId(string userId, out string connectionId)
     {
         return _userConnections.TryGetValue(userId, out connectionId);
     }
+
+    public static string? GetConnectionId(string userId)
+    {
+        lock (_userConnections)
+        {
+            return _userConnections.TryGetValue(userId, out var connectionId) ? connectionId : null;
+        }
+    }
+
     //public async Task UpdateGameForUser()
     //{
     //    var userId = Context.GetHttpContext().Request.Query["userIdData"];
