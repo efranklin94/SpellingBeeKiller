@@ -58,16 +58,18 @@ public class GameHub : Hub
 
     public static bool TryGetConnectionId(string userId, out string connectionId)
     {
-        return _userConnections.TryGetValue(userId, out connectionId);
-    }
-
-    public static string? GetConnectionId(string userId)
-    {
         lock (_userConnections)
         {
-            return _userConnections.TryGetValue(userId, out var connectionId) ? connectionId : null;
+            if (!string.IsNullOrEmpty(userId) && _userConnections.TryGetValue(userId, out var connId))
+            {
+                connectionId = connId;
+                return true;
+            }
+            connectionId = null!;
+            return false;
         }
     }
+
 
     //public async Task UpdateGameForUser()
     //{

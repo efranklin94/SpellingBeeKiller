@@ -1,8 +1,6 @@
 ﻿using DomainModels.DTO;
 using DomainModels.DTO.ResponseModels.Game;
 using DomainModels.Models;
-using DomainModels.Models.Game;
-using DomainModels.Models.IntermediateModels;
 using DomainServices.Implementations;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;

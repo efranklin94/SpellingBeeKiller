@@ -73,7 +73,7 @@ public class GameService
         await Task.Delay(TimeSpan.FromSeconds(5));
         if (GameHub.TryGetConnectionId(game.PlayerRoomHostId, out var connectionId))
         {
-            await hubContext.Clients.User(game.PlayerRoomHostId).SendAsync("GameStart", game);
+            await hubContext.Clients.User(game.PlayerRoomHostId).SendAsync("JoinGame", game);
         }
         else
         {
@@ -91,17 +91,29 @@ public class GameService
         await coreBeeGameRedisRepository.AddOrUpdateAsync("", coreBeeGameData);
 
         // find the other player
-        var userPlayed = coreBeeGameData.RoundLogs.Last().Username;
-        string turnedUserId = userPlayed == coreBeeGameData.PlayerRoomHostId ? coreBeeGameData.PlayerRoomHostId : coreBeeGameData.PlayerRoomGuestId;
-        // and send the updated data to the other player
-        await Task.Delay(TimeSpan.FromSeconds(5));
-        if (GameHub.TryGetConnectionId(turnedUserId, out var connectionId))
+        var usernamePlayed = coreBeeGameData.RoundLogs.Last().Username;
+        User userPlayed = await userRepository.GetUserByUsernameAsync(usernamePlayed);
+        string turnedPlayerId = "";
+        if (userPlayed.Id == coreBeeGameData.PlayerRoomHostId)
         {
-            await hubContext.Clients.Client(connectionId).SendAsync("GameProgress", coreBeeGameData);
+            turnedPlayerId = coreBeeGameData.PlayerRoomGuestId;
         }
         else
         {
-            // Handle offline user (store notification, etc.)
+            turnedPlayerId = coreBeeGameData.PlayerRoomHostId;
+        }
+        // and if the other player has joined the game, send the updated data to the other player
+        if (turnedPlayerId != "")
+        {
+            await Task.Delay(TimeSpan.FromSeconds(5));
+            if (GameHub.TryGetConnectionId(turnedPlayerId, out var connectionId))
+            {
+                await hubContext.Clients.Client(connectionId).SendAsync("GameProgress", coreBeeGameData);
+            }
+            else
+            {
+                // Handle offline user (store notification, etc.)
+            }
         }
     }
 
