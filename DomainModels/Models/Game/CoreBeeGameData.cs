@@ -9,7 +9,7 @@ namespace DomainModels.Models.Game
         [Key(1)]
         public required string GameId { get; set; }
         [Key(2)]
-        public UserBaseModel? PlayerRoomHost { get; set; }
+        public required UserBaseModel PlayerRoomHost { get; set; }
         [Key(3)]
         public UserBaseModel? PlayerRoomGuest { get; set; }
         [Key(4)]

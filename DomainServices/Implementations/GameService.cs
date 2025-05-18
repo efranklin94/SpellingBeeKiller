@@ -61,7 +61,12 @@ public class GameService
         var gameData = await coreBeeGameRedisRepository.GetAsync("", gameId);
         if (gameData == null) throw new Exception("Game not found");
 
+        // Check if the user was joined to the room or not 
         var user = await userRepository.GetUserByIdAsync(userId);
+        if (user.Id == gameData.PlayerRoomHost!.UserId || user.Id == gameData.PlayerRoomGuest?.UserId)
+        {
+            throw new Exception("You have already joined the game");
+        }    
         
         // Add second player
         gameData.PlayerRoomGuest = new UserBaseModel { 
@@ -99,13 +104,17 @@ public class GameService
 
     public async Task SaveGameProgress(MainGameLogProgressRequestModel dto)
     {
-        // Update the rounds
         CoreBeeGameData coreBeeGameData = await coreBeeGameRedisRepository.GetAsync("", dto.GameId);
+        if (coreBeeGameData == null) throw new Exception("Game not found");
+
+        var usernamePlayed = dto.Round.Username;
+        User userPlayed = await userRepository.GetUserByUsernameAsync(usernamePlayed);
+        if (userPlayed == null) throw new InvalidOperationException($"User {usernamePlayed} not found.");
+
+        // Update the rounds
         coreBeeGameData.RoundLogs.Add(dto.Round);
         await coreBeeGameRedisRepository.AddOrUpdateAsync("", coreBeeGameData);
 
-        var usernamePlayed = coreBeeGameData.RoundLogs.Last().Username;
-        User userPlayed = await userRepository.GetUserByUsernameAsync(usernamePlayed);
         string turnedPlayerId = "";
 
         // If the room has a guest then inform them
@@ -136,17 +145,36 @@ public class GameService
 
     public async Task FinishGameAsync(string winnerUserId, string gameId)
     {
-        User winnerUser = await userRepository.GetUserByIdAsync(winnerUserId);
+        // TODO if no one played anything there shouldne be any awards!
 
         CoreBeeGameData gameData = await coreBeeGameRedisRepository.GetAsync("", gameId);
+        if (gameData == null) throw new Exception($"Game {gameId} not found");
 
-        string loserId = winnerUserId == gameData.PlayerRoomHost.UserId ? gameData.PlayerRoomHost.UserId : gameData.PlayerRoomHost.UserId;
-        User loserUser = await userRepository.GetUserByIdAsync(loserId);
+        User winnerUser = await userRepository.GetUserByIdAsync(winnerUserId);
+        if (winnerUser == null) throw new InvalidOperationException($"Winner {winnerUserId} not found.");
+
+        string loserId = "";
+        User loserUser = null;
+
+        // If we have the other joined player, then he is the loser
+        if (gameData.PlayerRoomGuest != null)
+        { 
+            if (winnerUserId == gameData.PlayerRoomHost.UserId)
+            {
+                loserId = gameData.PlayerRoomGuest.UserId;
+            }
+            else
+            {
+                loserId = gameData.PlayerRoomHost.UserId;
+            }
+
+            loserUser = await userRepository.GetUserByIdAsync(loserId);
+        }
 
         MainGameHistory gameHistory = new MainGameHistory();
         gameHistory.GameId = gameId;
         gameHistory.WinnerName = winnerUser.Username;
-        gameHistory.LoserName = loserUser.Username;
+        gameHistory.LoserName = loserUser?.Username ?? string.Empty; // If we there was no other player in the room we dont have any losers
         gameHistory.Score = 50;
         gameHistory.RewardedCoinAmount = 50;
 
@@ -172,33 +200,17 @@ public class GameService
             // Handle offline user (store notification, etc.)
         }
 
-        if (GameHub.TryGetConnectionId(loserUser.Id, out var connectionId2))
+        if (loserUser != null)
         {
-            await hubContext.Clients.User(loserUser.Id).SendAsync("GameFinished", gameHistory);
+            if (GameHub.TryGetConnectionId(loserUser.Id, out var connectionId2))
+            {
+                await hubContext.Clients.User(loserUser.Id).SendAsync("GameFinished", gameHistory);
+            }
+            else
+            {
+                // Handle offline user (store notification, etc.)
+            }
         }
-        else
-        {
-            // Handle offline user (store notification, etc.)
-        }
-
 
     }
 }
-
-
-/*        UserBaseModel hostUser = new UserBaseModel();
-        hostUser.UserId = firstUserId;
-        hostUser.NickName = firstUser.Username;
-        hostUser.Level = firstUser.Level;
-        
-        UserBaseModel guestUser = new UserBaseModel();
-        hostUser.UserId = secondUserId;
-        hostUser.NickName = secondUser.Username;
-        hostUser.Level = secondUser.Level;
-
-        CoreBeeGameDataDTO gameResponse = new CoreBeeGameDataDTO();
-        gameResponse.GameId = gameData.GameId;
-        gameResponse.RoundLogs = gameData.RoundLogs;
-        gameResponse.TimePerTurnInHours = gameData.TimePerTurnInHours;
-        gameResponse.PlayerRoomHost = hostUser;
-        gameResponse.PlayerRoomGuest = guestUser;*/

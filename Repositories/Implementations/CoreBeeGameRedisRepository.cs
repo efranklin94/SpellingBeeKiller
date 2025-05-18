@@ -41,7 +41,7 @@ public class CoreBeeGameRedisRepository : IRedisRepository<CoreBeeGameData>
         var pattern = $"{Prefix}:*";
 
         var result = await GetByPattern(pattern);
-        result = result.Where(g => g.PlayerRoomHost.UserId == userId || g.PlayerRoomGuest.UserId == userId);
+        result = result.Where(g => g.PlayerRoomHost.UserId == userId || g.PlayerRoomGuest?.UserId == userId);
         return result;
     }
 
