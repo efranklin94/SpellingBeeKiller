@@ -1,4 +1,6 @@
-﻿namespace DomainModels.DTO.ResponseModels.Game;
+﻿using DomainModels.Models.Game;
+
+namespace DomainModels.DTO.ResponseModels.Game;
 
 public class CreateOrJoinGameResponse
 {
