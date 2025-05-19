@@ -1,15 +1,12 @@
 using DomainModels.Models;
-using DomainModels.Models.Game;
 using DomainServices.Contracts;
 using DomainServices.Contracts.UserServices;
 using DomainServices.Implementations;
 using DomainServices.Implementations.UserServices;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using RedisTools;
 using Repositories;
 using Repositories.Contracts;
 using Repositories.Implementations;
@@ -115,8 +112,8 @@ app.MapPost("/api/test/send-start", async (IHubContext<GameHub> hubContext) =>
 
     if (GameHub.TryGetConnectionId(userId, out var connectionId))
     {
-        await hubContext.Clients.Client(connectionId).SendAsync("GameStart", payload);
-        return Results.Ok(new { Sent = "GameStart", To = userId, Payload = payload });
+        await hubContext.Clients.Client(connectionId).SendAsync("JoinGame", payload);
+        return Results.Ok(new { Sent = "JoinGame", To = userId, Payload = payload });
     }
 
     return Results.NotFound($"No active connection found for user {userId}");

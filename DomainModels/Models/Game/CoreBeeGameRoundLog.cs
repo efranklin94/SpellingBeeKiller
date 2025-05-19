@@ -6,7 +6,7 @@ namespace DomainModels.Models.Game;
 public class CoreBeeGameRoundLog
 {
     [Key(0)]
-    public string Username { get; set; }
+    public required string Username { get; set; }
     [Key(1)]
     public DateTime TurnPlayedTime { get; set; }
 }

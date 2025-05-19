@@ -15,4 +15,6 @@ public class GameHistory : BaseDbModel
     public int? Score { get; set; }
     [Key(5)]
     public bool Claimed { get; set; }
+    [Key(6)]
+    public DateTime CreatedAt { get; set; }
 }

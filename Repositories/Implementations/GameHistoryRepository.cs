@@ -20,7 +20,8 @@ public class GameHistoryRepository
             LoserName = gameHistory.LoserName,
             RewardedCoinAmount = gameHistory.RewardedCoinAmount,
             Score = gameHistory.Score,
-            WinnerName = gameHistory.WinnerName
+            WinnerName = gameHistory.WinnerName,
+            CreatedAt = DateTime.Now
         };
 
         await _databaseContext.GameHistoriesCollection.InsertOneAsync(history);

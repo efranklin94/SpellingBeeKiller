@@ -28,7 +28,14 @@ namespace DomainServices.Implementations
                     Coin = user.Coin,
                 },
 
-                CoreBeeGameDataList = coreGameData.ToList(),
+                CoreBeeGameDataList = coreGameData.Select(g => new CoreBeeGameData
+                {
+                    GameId = g.GameId,
+                    PlayerRoomHost = g.PlayerRoomHost,
+                    PlayerRoomGuest = g.PlayerRoomGuest,
+                    RoundLogs = g.RoundLogs,
+                    TimePerTurnInHours = g.TimePerTurnInHours
+                }).ToList()
             };
 
             return model;

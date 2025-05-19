@@ -39,8 +39,10 @@ public class CoreBeeGameRedisRepository : IRedisRepository<CoreBeeGameData>
     public async Task<IEnumerable<CoreBeeGameData>> GetAllForUserAsync(string userId)
     {
         var pattern = $"{Prefix}:*";
-        return (await GetByPattern(pattern))
-            .Where(g => g.PlayerRoomHostId == userId || g.PlayerRoomGuestId == userId);
+
+        var result = await GetByPattern(pattern);
+        result = result.Where(g => g.PlayerRoomHost.UserId == userId || g.PlayerRoomGuest?.UserId == userId);
+        return result;
     }
 
     private async Task<IEnumerable<CoreBeeGameData>> GetByPattern(string pattern)
