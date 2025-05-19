@@ -3,6 +3,8 @@ using DomainServices.Contracts;
 using DomainServices.Contracts.UserServices;
 using DomainServices.Implementations;
 using DomainServices.Implementations.UserServices;
+using Hangfire;
+using Hangfire.Redis.StackExchange;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.IdentityModel.Tokens;
@@ -85,6 +87,7 @@ builder.Services.AddAuthentication(x =>
         ValidateLifetime = true
     };
 });
+
 
 
 var app = builder.Build();
