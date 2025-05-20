@@ -88,7 +88,11 @@ builder.Services.AddAuthentication(x =>
     };
 });
 
-
+// Hangfire
+builder.Services.AddHangfire(config => 
+    config.UseRedisStorage(builder.Configuration.GetConnectionString("HangfireRedisDbConnection"), new RedisStorageOptions { Prefix = "hangfire" })
+);
+builder.Services.AddHangfireServer();
 
 var app = builder.Build();
 
@@ -121,4 +125,7 @@ app.MapPost("/api/test/send-start", async (IHubContext<GameHub> hubContext) =>
 
     return Results.NotFound($"No active connection found for user {userId}");
 });
+
+app.UseHangfireDashboard("/hangfire");
+
 app.Run();

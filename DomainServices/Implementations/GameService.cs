@@ -2,6 +2,7 @@
 using DomainModels.Models;
 using DomainModels.Models.Game;
 using DomainModels.Models.IntermediateModels;
+using Hangfire;
 using Microsoft.AspNetCore.SignalR;
 using MongoDB.Driver;
 using Repositories.Contracts;
@@ -15,13 +16,15 @@ public class GameService
     private readonly GameHistoryRepository gameHistoryRepository;
     private readonly IUserRepository userRepository;
     private readonly IHubContext<GameHub> hubContext;
+    private readonly IBackgroundJobClient backgroundJobClient;
 
-    public GameService(CoreBeeGameRedisRepository coreBeeGameRedisRepository, GameHistoryRepository gameHistoryRepository, IUserRepository userRepository, IHubContext<GameHub> hubContext)
+    public GameService(CoreBeeGameRedisRepository coreBeeGameRedisRepository, GameHistoryRepository gameHistoryRepository, IUserRepository userRepository, IHubContext<GameHub> hubContext, IBackgroundJobClient backgroundJobClient)
     {
         this.coreBeeGameRedisRepository = coreBeeGameRedisRepository;
         this.gameHistoryRepository = gameHistoryRepository;
         this.userRepository = userRepository;
         this.hubContext = hubContext;
+        this.backgroundJobClient = backgroundJobClient;
     }
 
     public async Task<(int firstUserUpdatedTicket, CoreBeeGameData gameDataDTO)> CreateGameAsync(string userId)
@@ -52,6 +55,13 @@ public class GameService
             Builders<User>.Update
                 .Set(x => x.Ticket, user.Ticket)
                 .Set(x => x.UpdatedAt, DateTime.UtcNow));
+
+        // Schedule FinishGameAsync to run in 2 hours
+        // TODO calculate the winner`s score to decide which userId shall be passed
+        backgroundJobClient.Schedule<GameService>(
+            service => service.FinishGameAsync(userId, gameData.GameId),
+            TimeSpan.FromSeconds(20)
+        );
 
         return (user.Ticket, gameData);
     }
