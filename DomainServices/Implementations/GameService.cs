@@ -121,6 +121,12 @@ public class GameService
         User userPlayed = await userRepository.GetUserByUsernameAsync(usernamePlayed);
         if (userPlayed == null) throw new InvalidOperationException($"User {usernamePlayed} not found.");
 
+        // Prevent the user from playing again when its the opponents turn
+        if (coreBeeGameData.RoundLogs.Count > 1 && coreBeeGameData.RoundLogs.Last().Username == usernamePlayed)
+        {
+            throw new InvalidOperationException("you played your turn, you should wait for your opponent");
+        }
+
         // Update the rounds
         coreBeeGameData.RoundLogs.Add(dto.Round);
         await coreBeeGameRedisRepository.AddOrUpdateAsync("", coreBeeGameData);
